@@ -47,7 +47,7 @@ function scandir(directory)
 end
 
 local seen = {}
-local queue = {'mingw-w64-ucrt-x86_64-pango', ' mingw-w64-ucrt-x86_64-gtk3'}
+local queue = {'mingw-w64-ucrt-x86_64-gtk3'}
 
 
 while #queue > 0 do
@@ -68,18 +68,19 @@ while #queue > 0 do
 
             local prefix, suffix = string.sub(l, 1, i-1), string.sub(l, i+2)
 
-            if prefix == 'Depends On      ' then
+            if prefix == 'Depends On      ' or prefix == 'Optional Deps   ' then
 
                 i = string.find(suffix, '  ')
                 while i do
-                    table.insert (queue, string.sub(suffix, 1, i - 1))
+                    local dep = string.sub(suffix, 1, i - 1)
+                    if not seen[dep] then table.insert (queue, dep) end
                     suffix = string.sub (suffix, i + 2)
                     i = string.find(suffix, '  ')
+                    if not i and #suffix > 0 then i = #suffix + 1 end
                 end
             end
         end
     end
-
 end
 
 local temp_dir = scandir 'temp'
@@ -92,4 +93,3 @@ for i = 3, #temp_dir do
         os.execute ('cd temp && tar xf ' .. string.sub(filename, 1, #filename - 4))
     end
 end
-    
