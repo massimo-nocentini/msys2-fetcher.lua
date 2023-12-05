@@ -46,7 +46,8 @@ function scandir(directory)
     return t
 end
 
-local seen = {}
+local count = 0
+local seen = {None = count}
 local queue = {'mingw-w64-ucrt-x86_64-gtk3'}
 
 
@@ -56,9 +57,9 @@ while #queue > 0 do
     
     if not seen[package_name] then
 
-        seen[package_name] = true
+        count = count + 1
+        seen[package_name] = count
         print('Fetching ' .. package_name .. ' ...')
-        os.execute ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
         os.execute ('pacman -Q -i ' .. package_name .. ' > tmp.txt')
 
         for l in io.lines 'tmp.txt' do
@@ -68,20 +69,22 @@ while #queue > 0 do
 
             local prefix, suffix = string.sub(l, 1, i-1), string.sub(l, i+2)
 
-            if prefix == 'Depends On      ' or prefix == 'Optional Deps   ' then
+            if string.sub(prefix, 1, 10) == 'Depends On' then
 
-                i = string.find(suffix, '  ')
-                while i do
-                    local dep = string.sub(suffix, 1, i - 1)
+                for dep in string.gmatch (suffix, '(%g+)') do 
                     if not seen[dep] then table.insert (queue, dep) end
-                    suffix = string.sub (suffix, i + 2)
-                    i = string.find(suffix, '  ')
-                    if not i and #suffix > 0 then i = #suffix + 1 end
                 end
             end
         end
     end
 end
+
+seen.None = nil
+
+local packages = {}
+for name, i in pairs (seen) do packages[i] = name end
+
+os.execute ('pacman -Sw --cachedir temp --noconfirm ' .. table.concat(packages, ' '))
 
 local temp_dir = scandir 'temp'
 
