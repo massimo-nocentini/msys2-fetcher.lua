@@ -1,5 +1,4 @@
 
-local curl = require 'curl'
 local op = require 'operator'
 
 --[[
@@ -48,7 +47,9 @@ end
 
 local count = 0
 local seen = {None = count}
-local queue = {'mingw-w64-ucrt-x86_64-gtk3'}
+local queue = {}
+
+for i, name in ipairs(arg) do table.insert (queue, name) end
 
 
 while #queue > 0 do
