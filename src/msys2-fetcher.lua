@@ -51,7 +51,6 @@ local queue = {}
 
 for i, name in ipairs(arg) do table.insert (queue, name) end
 
-
 while #queue > 0 do
 
     local package_name = table.remove (queue)
@@ -61,6 +60,7 @@ while #queue > 0 do
         count = count + 1
         seen[package_name] = count
         print('Fetching ' .. package_name .. ' ...')
+        os.execute ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
         os.execute ('pacman -Q -i ' .. package_name .. ' > tmp.txt')
 
         for l in io.lines 'tmp.txt' do
@@ -72,9 +72,7 @@ while #queue > 0 do
 
             if string.sub(prefix, 1, 10) == 'Depends On' then
 
-                for dep in string.gmatch (suffix, '(%g+)') do 
-                    if not seen[dep] then table.insert (queue, dep) end
-                end
+                for dep in string.gmatch (suffix, '(%g+)') do table.insert (queue, dep) end
             end
         end
     end
@@ -82,10 +80,10 @@ end
 
 seen.None = nil
 
-local packages = {}
-for name, i in pairs (seen) do packages[i] = name end
+-- local packages = {}
+-- for name, i in pairs (seen) do packages[i] = name end
 
-os.execute ('pacman -Sw --cachedir temp --noconfirm ' .. table.concat(packages, ' '))
+-- os.execute ('pacman -Swv --cachedir temp --noconfirm ' .. table.concat(packages, ' '))
 
 local temp_dir = scandir 'temp'
 
