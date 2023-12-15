@@ -75,14 +75,17 @@ while #queue > 0 do
                 for dep in string.gmatch (suffix, '(%g+)') do table.insert (queue, dep) end
             end
         end
+
+        os.execute 'rm tmp.txt'
     end
 end
 
-seen.None = nil
+seen.None = nil -- remove the None package because it is just a placeholder.
 
 -- local packages = {}
 -- for name, i in pairs (seen) do packages[i] = name end
 
+-- print ('Downloading ' .. #packages .. ' packages ...')
 -- os.execute ('pacman -Swv --cachedir temp --noconfirm ' .. table.concat(packages, ' '))
 
 local temp_dir = scandir 'temp'
