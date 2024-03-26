@@ -49,7 +49,12 @@ while #queue > 0 do
 
                 if string.sub(prefix, 1, 10) == 'Depends On' then
 
-                    for dep in string.gmatch (suffix, '(%g+)') do table.insert (queue, dep) end
+                    for dep in string.gmatch (suffix, '(%g+)') do 
+                        if not seen[dep] then
+                            print ('\tnew dependency: ' .. dep ..)
+                        end
+                        table.insert (queue, dep)
+                    end
                 end
             end
 
