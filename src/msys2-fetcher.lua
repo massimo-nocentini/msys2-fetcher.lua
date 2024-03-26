@@ -27,7 +27,7 @@ while #queue > 0 do
         print('Fetching ' .. package_name .. ' ...')
         
         local ppackage = io.popen ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
-        local retmsg = ppackage:read () 
+        local retmsg = ppackage:read 'a'
         
         if string.sub(retmsg, 1, #error_placeholder) == error_placeholder then
             allok = false
