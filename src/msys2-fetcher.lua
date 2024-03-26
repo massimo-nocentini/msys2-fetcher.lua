@@ -1,7 +1,7 @@
 
 function scandir(directory)
-    local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls -a "'..directory..'"')
+    local i, t = 0, {}
+    local pfile = io.popen('ls -a "'..directory..'"')
     for filename in pfile:lines() do
         i = i + 1
         t[i] = filename
@@ -26,7 +26,7 @@ while #queue > 0 do
 
         print('Fetching ' .. package_name .. ' ...')
         
-        local ppackage = popen ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
+        local ppackage = io.popen ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
         local retmsg = ppackage:read () 
         
         if string.sub(retmsg, 1, #error_placeholder) == error_placeholder then
@@ -38,7 +38,7 @@ while #queue > 0 do
 
         if allok then
         
-            local ptmp = popen('pacman -Q -i --cachedir temp ' .. package_name)
+            local ptmp = io.popen('pacman -Q -i --cachedir temp ' .. package_name)
 
             for l in ptmp:lines () do
 
