@@ -6,4 +6,4 @@ cd temp
 rm -rf .* *.sig *.tar *.zst
 zip -r ../../pharo-goodies.zip ./*
 cd ../../
-rm -rf pharo-goodies-sandbox
+# rm -rf pharo-goodies-sandbox
