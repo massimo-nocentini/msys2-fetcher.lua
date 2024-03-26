@@ -10,9 +10,9 @@ function scandir(directory)
     return t
 end
 
-local count = 0
-local seen = {None = count}
+local seen = {}
 local queue = {}
+local error_placeholder = 'error:'
 
 for i, name in ipairs(arg) do table.insert (queue, name) end
 
@@ -22,30 +22,45 @@ while #queue > 0 do
     
     if not seen[package_name] then
 
-        count = count + 1
-        seen[package_name] = count
+        local allok = true  -- innocent until proven guilty.
+
         print('Fetching ' .. package_name .. ' ...')
-        os.execute ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
-        os.execute ('pacman -Q -i ' .. package_name .. ' > tmp.txt')
-
-        for l in io.lines 'tmp.txt' do
-
-            local i = string.find(l, ': ')
-            if not i then break end
-
-            local prefix, suffix = string.sub(l, 1, i-1), string.sub(l, i+2)
-
-            if string.sub(prefix, 1, 10) == 'Depends On' then
-
-                for dep in string.gmatch (suffix, '(%g+)') do table.insert (queue, dep) end
-            end
+        
+        local ppackage = popen ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
+        local retmsg = ppackage:read () 
+        
+        if string.sub(retmsg, 1, #error_placeholder) == error_placeholder then
+            allok = false
+            print ('Package ' .. package_name .. ' needs retry because of ' .. retmsg)
         end
+            
+        ppackage:close()
 
-        os.execute 'rm tmp.txt'
+        if allok then
+        
+            local ptmp = popen('pacman -Q -i --cachedir temp ' .. package_name)
+
+            for l in ptmp:lines () do
+
+                local i = string.find(l, ': ')
+                if not i then break end
+
+                local prefix, suffix = string.sub(l, 1, i-1), string.sub(l, i+2)
+
+                if string.sub(prefix, 1, 10) == 'Depends On' then
+
+                    for dep in string.gmatch (suffix, '(%g+)') do table.insert (queue, dep) end
+                end
+            end
+
+            ptmp:close()
+            
+            seen[package_name] = true
+
+        else table.insert (queue, package_name) end
+
     end
 end
-
-seen.None = nil -- remove the None package because it is just a placeholder.
 
 -- local packages = {}
 -- for name, i in pairs (seen) do packages[i] = name end
