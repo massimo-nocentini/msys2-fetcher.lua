@@ -29,8 +29,6 @@ while #queue > 0 do
         local ppackage = io.popen ('pacman -Sw --cachedir temp --noconfirm ' .. package_name)
         local retmsg = ppackage:read 'a'
 
-        print ('Retmsg: ' .. retmsg)
-        
         if string.sub(retmsg, 1, #error_placeholder) == error_placeholder then
             allok = false
             print ('Package ' .. package_name .. ' needs retry because of ' .. retmsg)
