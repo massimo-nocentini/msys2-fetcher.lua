@@ -1,39 +1,4 @@
 
-local op = require 'operator'
-
---[[
-curl.with_easy_pcall_recv_do (
-	function (curl_easy_handler)
-
-        local pflag, setopt = curl_easy_handler (
-            curl.curl_easy_httpheader_setopt_getinfo {
-                httpheader	= {
-                    Accept = 'application/json'
-                },
-                setopt		= {
-                    url = 'https://packages.msys2.org/api/search?query=mingw-w64-pango',
-                    verbose = false,
-                    header = false,
-                    ssl_verifypeer = true,
-                    ssl_verifyhost = true,
-                    --cainfo = replication_conf.curl.cainfo_file,
-                    writefunction = true -- means that we just want the whole response, not interested in its chunks.
-                }
-            }
-        )
-
-        assert (pflag)		-- ensure everything went well.
-        json_response = op.o { curl.assertCURLE_OK, setopt.writefunction } ()
-
-        print (json_response)
-                
-                   
-    end
-)
-]]
-
-
--- Lua implementation of PHP scandir function
 function scandir(directory)
     local i, t, popen = 0, {}, io.popen
     local pfile = popen('ls -a "'..directory..'"')
