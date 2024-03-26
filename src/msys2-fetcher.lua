@@ -51,7 +51,7 @@ while #queue > 0 do
 
                     for dep in string.gmatch (suffix, '(%g+)') do 
                         if not seen[dep] then
-                            print ('\tnew dependency: ' .. dep ..)
+                            print ('\tnew dependency: ' .. dep)
                         end
                         table.insert (queue, dep)
                     end
