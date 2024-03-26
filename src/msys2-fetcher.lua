@@ -10,7 +10,7 @@ function scandir(directory)
     return t
 end
 
-local seen = {}
+local seen = {None = true}
 local queue = {}
 local error_placeholder = 'error:'
 
@@ -63,6 +63,8 @@ while #queue > 0 do
 
     end
 end
+
+seen.None = nil
 
 -- local packages = {}
 -- for name, i in pairs (seen) do packages[i] = name end
